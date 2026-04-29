@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VK QUIZ</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="topbar card">
+        <h1>VK QUIZ</h1>
+        <div id="topbar-actions" class="topbar-actions hidden">
+          <span id="user-badge" class="user-badge"></span>
+          <button type="button" id="cabinet-btn" class="btn-secondary">Личный кабинет</button>
+          <button type="button" id="logout-btn" class="btn-secondary">Выйти</button>
+        </div>
+      </header>
+
+      <section id="landing-view" class="card hero">
+        <h2>Онлайн-платформа для квизов в реальном времени</h2>
+        <p>
+          VK QUIZ помогает организаторам быстро создавать интерактивные викторины, запускать комнаты по коду и показывать
+          результаты участникам в живом лидерборде.
+        </p>
+        <div class="hero-grid">
+          <div class="hero-item">
+            <h3>Для организаторов</h3>
+            <p>Создавайте квизы, настраивайте время, добавляйте текстовые и визуальные вопросы, запускайте сессию по коду комнаты.</p>
+          </div>
+          <div class="hero-item">
+            <h3>Для участников</h3>
+            <p>Подключайтесь к активному квизу за секунды, отвечайте на вопросы во время показа и следите за рейтингом.</p>
+          </div>
+        </div>
+        <div class="row">
+          <button type="button" id="go-login">Войти</button>
+          <button type="button" id="go-register" class="btn-secondary">Регистрация</button>
+        </div>
+      </section>
+
+      <section id="login-view" class="card hidden auth-card">
+        <h2>Вход</h2>
+        <form id="login-form" class="form">
+          <label class="field">
+            <span>Email</span>
+            <input name="email" type="email" placeholder="you@example.com" required />
+          </label>
+          <label class="field">
+            <span>Пароль</span>
+            <input name="password" type="password" placeholder="Ваш пароль" required />
+          </label>
+          <button type="submit">Войти</button>
+        </form>
+        <button type="button" id="back-from-login" class="btn-link">Назад на главную</button>
+      </section>
+
+      <section id="register-view" class="card hidden auth-card">
+        <h2>Регистрация</h2>
+        <form id="register-form" class="form">
+          <label class="field">
+            <span>Имя</span>
+            <input name="name" placeholder="Ваше имя" required />
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input name="email" type="email" placeholder="you@example.com" required />
+          </label>
+          <label class="field">
+            <span>Пароль</span>
+            <input name="password" type="password" placeholder="Минимум 6 символов" required />
+          </label>
+          <label class="field">
+            <span>Роль</span>
+            <select name="role" required>
+              <option value="participant">Участник</option>
+              <option value="organizer">Организатор</option>
+            </select>
+          </label>
+          <button type="submit">Создать аккаунт</button>
+        </form>
+        <button type="button" id="back-from-register" class="btn-link">Назад на главную</button>
+      </section>
+
+      <section id="dashboard-view" class="hidden">
+        <div class="card" id="organizer-panel">
+          <h2>Панель организатора</h2>
+          <form id="quiz-form" class="form" novalidate>
+            <label class="field">
+              <span>Название</span>
+              <input name="title" placeholder="Например: Викторина по истории" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>Категории</span>
+              <input name="categories" placeholder="Через запятую: спорт, кино" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>Секунд на ответ</span>
+              <input name="timeLimit" type="number" min="5" max="120" value="20" />
+            </label>
+            <label class="field">
+              <span>Правила</span>
+              <textarea name="rules" placeholder="Кратко опишите правила"></textarea>
+            </label>
+
+            <div id="questions-wrap"></div>
+            <div class="row">
+              <button type="button" id="add-question">+ Добавить вопрос</button>
+              <button type="submit">Сохранить квиз</button>
+              <button type="button" id="cancel-edit" class="btn-secondary hidden">Отменить редактирование</button>
+            </div>
+          </form>
+
+          <div class="divider"></div>
+          <h3>Мои квизы</h3>
+          <div id="my-quizzes" class="list"></div>
+        </div>
+
+        <div class="card" id="participant-panel">
+          <h2>Панель участника</h2>
+          <form id="join-form" class="form row">
+            <input name="roomCode" placeholder="Код комнаты" required />
+            <button type="submit">Подключиться</button>
+          </form>
+        </div>
+
+        <div class="card hidden" id="live-room">
+          <h2>Live-квиз: <span id="room-code"></span></h2>
+          <div id="room-status" class="muted"></div>
+          <div class="row">
+            <button id="start-btn" class="hidden">Запустить квиз</button>
+            <button id="finish-btn" class="hidden btn-secondary">Завершить квиз</button>
+          </div>
+
+          <div id="question-box" class="question hidden"></div>
+          <button id="submit-answer" class="hidden">Отправить ответ</button>
+
+          <h3>Лидерборд</h3>
+          <div id="leaderboard" class="list"></div>
+        </div>
+
+      </section>
+
+      <section id="host-view" class="hidden">
+        <div class="card">
+          <h2>Проведение квиза: <span id="host-room-code"></span></h2>
+          <div id="host-room-status" class="muted"></div>
+          <div class="row">
+            <button id="host-start-btn">Запустить квиз</button>
+            <button id="host-finish-btn" class="btn-secondary">Завершить квиз</button>
+            <button id="host-back-btn" class="btn-link">Назад в кабинет</button>
+          </div>
+          <div id="host-question-box" class="question"></div>
+          <h3>Лидерборд</h3>
+          <div id="host-leaderboard" class="list"></div>
+        </div>
+      </section>
+
+      <section id="cabinet-view" class="hidden">
+        <div class="card">
+          <h2>Личный кабинет</h2>
+          <button type="button" id="cabinet-back-btn" class="btn-link">Назад</button>
+          <div id="cabinet-organizer" class="hidden">
+            <h3>Мои квизы</h3>
+            <div id="cabinet-organizer-quizzes" class="list"></div>
+            <div class="divider"></div>
+            <h3>Проведенные квизы</h3>
+            <div id="cabinet-organizer-conducted" class="list"></div>
+          </div>
+          <div id="cabinet-participant" class="hidden">
+            <h3>Лидерборд по вашим играм</h3>
+            <div id="cabinet-participant-leaderboard" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <p id="message" class="message"></p>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
